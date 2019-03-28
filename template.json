@@ -31,10 +31,10 @@
             "spec": {
                 "tags": [
                     {
-                        "name": "1.1",
+                        "name": "2.3.0",
                         "from": {
                             "kind": "DockerImage",
-                            "name": "ivandw/s2i-gitbook:1.1"
+                            "name": "ivandw/s2i-gitbook:2.3.0"
                         }
                     }
                 ]
@@ -70,7 +70,7 @@
                     "sourceStrategy": {
                         "from": {
                             "kind": "ImageStreamTag",
-                            "name": "${APPLICATION_NAME}-s2i:1.1"
+                            "name": "${APPLICATION_NAME}-s2i:2.3.0"
                         }
                     }
                 },
