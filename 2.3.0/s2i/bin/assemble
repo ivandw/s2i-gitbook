@@ -16,7 +16,7 @@ echo "---> Running GitBook build"
 
 set +eo pipefail
 
-source scl_source enable rh-nodejs4
+source scl_source enable rh-nodejs8
 
 set -eo pipefail
 
