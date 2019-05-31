@@ -34,7 +34,7 @@
                         "name": "2.6.9",
                         "from": {
                             "kind": "DockerImage",
-                            "name": "ivandw/s2i-gitbook:2.6.9"
+                            "name": "iv89/gitbook:2.6.9"
                         }
                     }
                 ]
