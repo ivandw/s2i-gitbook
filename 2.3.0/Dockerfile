@@ -72,14 +72,14 @@ ENV HOME=/opt/app-root
 
 RUN source scl_source enable rh-nodejs8 && \
     gitbook fetch latest && \
-    mkdir /opt/app-root/src && \
-    find /opt/app-root -type d -exec chmod g+ws {} \;
 
 # Create the 'src' directory where the source code will reside. Fixup
 # all the directories under the account so they are group writable to
 # the 'root' group (gid=0) so they can be updated if necessary, such as
 # would occur if using 'oc rsync' to copy files into a container.
 
+RUN mkdir /opt/app-root/src && \
+find /opt/app-root -type d -exec chmod g+ws {} \;
 
 # Ensure that build and execution of Apache httpd server is done from
 # the 'src' directory where the source code will reside.
