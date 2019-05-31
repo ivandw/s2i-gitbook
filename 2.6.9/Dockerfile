@@ -11,12 +11,13 @@ RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
     ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
     yum install -y --setopt=tsflags=nodocs $PACKAGES2 && \
     rpm -V ${PACKAGES2} && \
-    yum clean all -y && \
-    mkdir -p /opt/app-root && \
-    chown 1001:0 /opt/app-root && \
+    yum clean all -y
 #crea una cuenta no root llamada default para ser owner de los archivos de apache
+RUN mkdir -p /opt/app-root && \
+    chown 1001:0 /opt/app-root && \
     useradd -u 1001 -r -g 0 -d /opt/app-root -s /sbin/nologin \
             -c "Default Application User" default
+
 
 # modfica la config de apache para escuchar en el puerto 8080 y loguear todo a
 # stdout, usar el directorio donde tiramos el gitbook clonado y el home del usr que creamos antes
