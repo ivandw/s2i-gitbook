@@ -5,16 +5,19 @@ FROM centos:centos7
 # package so we can copy files into the running container if necessary.
 
 RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
-    PACKAGES1="httpd rsync" && \
+    PACKAGES1="nginx rsync" && \
     yum install -y --setopt=tsflags=nodocs ${PACKAGES1} && \
     rpm -V ${PACKAGES1} && \
     yum install -y centos-release-scl-rh && \
-    PACKAGES2="rh-nodejs4 rh-nodejs4-npm rh-nodejs4-nodejs-nodemon" && \
+    PACKAGES2="rh-nodejs8 rh-nodejs8-npm rh-nodejs8-nodejs-nodemon" && \
     ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
     yum install -y --setopt=tsflags=nodocs $PACKAGES2 && \
     rpm -V ${PACKAGES2} && \
-    yum clean all -y
-
+    yum clean all -y && \
+    mkdir -p /opt/app-root && \
+    chown 1001:0 /opt/app-root && \
+    useradd -u 1001 -r -g 0 -d /opt/app-root -s /sbin/nologin \
+            -c "Default Application User" default
 # Create a non root account called 'default' to be the owner of all the
 # files which the Apache httpd server will be hosting. This account
 # needs to be in group 'root' (gid=0) as that is the group that the
@@ -22,10 +25,6 @@ RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
 # unique user ID not present in the host account database, using the
 # command 'docker run -u'.
 
-RUN mkdir -p /opt/app-root && \
-    chown 1001:0 /opt/app-root && \
-    useradd -u 1001 -r -g 0 -d /opt/app-root -s /sbin/nologin \
-            -c "Default Application User" default
 
 # Modify the default Apache configuration to listen on a non privileged
 # port of 8080, log everything to stdout/stderr, use different runtime
@@ -43,8 +42,8 @@ EXPOSE 8080
 
 # Install GitBook CLI to global SCL NodeJS installation.
 
-RUN source scl_source enable rh-nodejs4 && \
-    npm install -g gitbook-cli@2.3.0
+RUN source scl_source enable rh-nodejs8 && \
+    npm install -g gitbook-cli
 
 # Copy into place S2I builder scripts and label the Docker image so that
 # the 's2i' program knows where to find them.
@@ -72,15 +71,15 @@ ENV HOME=/opt/app-root
 # Install GitBook package into the home directory of the non root user.
 
 RUN source scl_source enable rh-nodejs4 && \
-    gitbook fetch latest
+    gitbook fetch latest && \
+    mkdir /opt/app-root/src && \
+    find /opt/app-root -type d -exec chmod g+ws {} \;
 
 # Create the 'src' directory where the source code will reside. Fixup
 # all the directories under the account so they are group writable to
 # the 'root' group (gid=0) so they can be updated if necessary, such as
 # would occur if using 'oc rsync' to copy files into a container.
 
-RUN mkdir /opt/app-root/src && \
-    find /opt/app-root -type d -exec chmod g+ws {} \;
 
 # Ensure that build and execution of Apache httpd server is done from
 # the 'src' directory where the source code will reside.
