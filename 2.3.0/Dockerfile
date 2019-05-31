@@ -70,7 +70,7 @@ ENV HOME=/opt/app-root
 
 # Install GitBook package into the home directory of the non root user.
 
-RUN source scl_source enable rh-nodejs4 && \
+RUN source scl_source enable rh-nodejs8 && \
     gitbook fetch latest && \
     mkdir /opt/app-root/src && \
     find /opt/app-root -type d -exec chmod g+ws {} \;
