@@ -5,7 +5,7 @@ FROM centos:centos7
 # package so we can copy files into the running container if necessary.
 
 RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
-    PACKAGES1="nginx rsync" && \
+    PACKAGES1="httpd rsync" && \
     yum install -y --setopt=tsflags=nodocs ${PACKAGES1} && \
     rpm -V ${PACKAGES1} && \
     yum install -y centos-release-scl-rh && \
