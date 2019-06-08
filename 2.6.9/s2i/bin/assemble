@@ -12,18 +12,18 @@ cp -Rf /tmp/src/. ${HOME}/src/
 
 rm -rf /tmp/src
 
-echo "---> Running GitBook build"
+echo "---> Buildeando Gitbook"
 
 set +eo pipefail
 
-source scl_source enable rh-nodejs8
+source scl_source enable nodejs
 
 set -eo pipefail
 
-gitbook install
+gitbook installopenrc --no-cache
 
 gitbook build
 
-echo "---> Fix permissions on source files"
+echo "---> permisos de carpeta src"
 
 chmod -Rf g+w ${HOME}/src || true
