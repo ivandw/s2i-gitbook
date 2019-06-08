@@ -1,17 +1,14 @@
-FROM centos:centos7
+FROM alpine:alpine:3.7
 ## instala los paquetes requeridos. Necesitamos Apache, Git rsync para tirar
 ## l contenido estatico y varios paquetes de node
 
-RUN rpmkeys --import file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
-    PACKAGES1="git httpd rsync" && \
-    yum install -y --setopt=tsflags=nodocs ${PACKAGES1} && \
-    rpm -V ${PACKAGES1} && \
-    yum install -y centos-release-scl-rh && \
-    PACKAGES2="rh-nodejs8 rh-nodejs8-npm rh-nodejs8-nodejs-nodemon" && \
+RUN apk add openrc --no-cache && \
+    PACKAGES1="git apache2 rsync" && \
+    apk add ${PACKAGES1} && \
+    PACKAGES2="nodejs nodejs-npm" && \
     ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
-    yum install -y --setopt=tsflags=nodocs $PACKAGES2 && \
-    rpm -V ${PACKAGES2} && \
-    yum clean all -y
+    apk add $PACKAGES2 && \
+    npm i -g nodemon && 
 #crea una cuenta no root llamada default para ser owner de los archivos de apache
 RUN mkdir -p /opt/app-root && \
     chown 1001:0 /opt/app-root && \
@@ -34,7 +31,7 @@ EXPOSE 8080
 
 # Install GitBook CLI to global SCL NodeJS installation.
 
-RUN source scl_source enable rh-nodejs8 && \
+RUN source scl_source enable nodejs && \
     npm install -g gitbook-cli
 
 # Copio los scripts y seteo las etiquetas
@@ -60,7 +57,7 @@ ENV HOME=/opt/app-root
 
 # instalo y updateo el GitBook package
 
-RUN source scl_source enable rh-nodejs8 && gitbook fetch latest
+RUN source scl_source enable nodejs && gitbook fetch latest
 
 # Create the 'src' directory. le seteo los permisos para que se pueda pegar archivos ( para usar rsync )
 
